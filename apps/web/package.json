@@ -12,6 +12,7 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
+    "@fireproof/api": "workspace:*",
     "@fireproof/db": "workspace:*",
     "@fireproof/domain": "workspace:*",
     "@fireproof/legal-export": "workspace:*",

@@ -4,15 +4,15 @@
  */
 
 import 'server-only';
-import { AuditEventService } from '../../../api/src/services/AuditEventService.js';
-import { EvidenceValidationService } from '../../../api/src/services/EvidenceValidationService.js';
-import { LegalHoldService } from '../../../api/src/services/LegalHoldService.js';
-import { DocumentService } from '../../../api/src/services/DocumentService.js';
-import { ExceptionLifecycleService } from '../../../api/src/services/ExceptionLifecycleService.js';
-import { RuleEvaluationService } from '../../../api/src/services/RuleEvaluationService.js';
-import { PacketService } from '../../../api/src/services/PacketService.js';
-import { PropertyDashboardService } from '../../../api/src/services/PropertyDashboardService.js';
-import { LocalFsStorageAdapter, type IStorageAdapter } from '../../../api/src/storage/index.js';
+import { AuditEventService } from '@fireproof/api/services/audit';
+import { EvidenceValidationService } from '@fireproof/api/services/evidence';
+import { LegalHoldService } from '@fireproof/api/services/legal-holds';
+import { DocumentService } from '@fireproof/api/services/documents';
+import { ExceptionLifecycleService } from '@fireproof/api/services/exceptions';
+import { RuleEvaluationService } from '@fireproof/api/services/rules';
+import { PacketService } from '@fireproof/api/services/packets';
+import { PropertyDashboardService } from '@fireproof/api/services/dashboard';
+import { LocalFsStorageAdapter, type IStorageAdapter } from '@fireproof/api/storage';
 import { getDb } from './db.js';
 
 declare global {

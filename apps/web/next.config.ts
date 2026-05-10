@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
     '@fireproof/db',
     '@fireproof/rules',
     '@fireproof/legal-export',
+    '@fireproof/api',
   ],
   // Route handlers in /app/api/v1/** wrap the same domain services used by
   // the standalone Fastify API. The apiClient targets /v1/* — rewrite to the

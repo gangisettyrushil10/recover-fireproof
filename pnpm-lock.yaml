@@ -120,6 +120,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@fireproof/api':
+        specifier: workspace:*
+        version: link:../api
       '@fireproof/db':
         specifier: workspace:*
         version: link:../../packages/db
