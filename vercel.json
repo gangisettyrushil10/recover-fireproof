@@ -3,10 +3,5 @@
   "framework": "nextjs",
   "installCommand": "pnpm install --frozen-lockfile=false",
   "buildCommand": "pnpm --filter @fireproof/web build",
-  "outputDirectory": "apps/web/.next",
-  "functions": {
-    "apps/web/app/api/v1/**": {
-      "maxDuration": 60
-    }
-  }
+  "outputDirectory": "apps/web/.next"
 }
