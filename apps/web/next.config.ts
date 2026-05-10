@@ -11,7 +11,25 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@fireproof/ui', '@fireproof/domain'],
+  transpilePackages: [
+    '@fireproof/ui',
+    '@fireproof/domain',
+    '@fireproof/db',
+    '@fireproof/rules',
+    '@fireproof/legal-export',
+  ],
+  // Route handlers in /app/api/v1/** wrap the same domain services used by
+  // the standalone Fastify API. The apiClient targets /v1/* — rewrite to the
+  // colocated handlers under /api/v1/*. A NEXT_PUBLIC_API_URL override still
+  // works for split-host deploys (web on Vercel, API on a separate host).
+  async rewrites() {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      // Split-host: don't rewrite; apiClient already prefixes the absolute
+      // origin and the rewrite would conflict.
+      return [];
+    }
+    return [{ source: '/v1/:path*', destination: '/api/v1/:path*' }];
+  },
   // The API returns Drizzle row shapes (snake_case `*_json` columns); our
   // domain Zod types are camelCase. Demo pages narrow each shape locally via
   // `as unknown as { … }`. Skip Next's strict type-check pass at build —
@@ -19,6 +37,10 @@ const nextConfig: NextConfig = {
   // with API DTO mappers in production.
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
+  // Increase serverless function timeout for packet generation.
+  experimental: {
+    serverActions: { bodySizeLimit: '10mb' },
+  },
   webpack: (config) => {
     // Workspace packages and our own src use ESM-style `.js` extensions in
     // imports (so the same files work under tsup builds). Webpack needs a

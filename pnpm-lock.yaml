@@ -89,6 +89,9 @@ importers:
       pino:
         specifier: ^9.4.0
         version: 9.14.0
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
       uuid:
         specifier: ^11.0.0
         version: 11.1.1
@@ -105,9 +108,6 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
-      tsx:
-        specifier: ^4.19.0
-        version: 4.21.0
       typescript:
         specifier: ^5.6.2
         version: 5.9.3
@@ -117,9 +117,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@fireproof/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@fireproof/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@fireproof/legal-export':
+        specifier: workspace:*
+        version: link:../../packages/legal-export
+      '@fireproof/rules':
+        specifier: workspace:*
+        version: link:../../packages/rules
       '@fireproof/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -132,15 +141,24 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.59.0
         version: 5.100.9(react@19.2.6)
+      drizzle-orm:
+        specifier: ^0.36.0
+        version: 0.36.4(@types/pg@8.20.0)(@types/react@19.2.14)(pg@8.20.0)(react@19.2.6)
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.2
+      jose:
+        specifier: ^5.9.0
+        version: 5.10.0
       lucide-react:
         specifier: ^0.451.0
         version: 0.451.0(react@19.2.6)
       next:
         specifier: ^15.0.0
         version: 15.5.18(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      pg:
+        specifier: ^8.13.0
+        version: 8.20.0
       react:
         specifier: ^19.0.0
         version: 19.2.6
@@ -150,6 +168,9 @@ importers:
       react-hook-form:
         specifier: ^7.53.0
         version: 7.75.0(react@19.2.6)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
       serwist:
         specifier: ^9.0.10
         version: 9.5.11(browserslist@4.28.2)(typescript@5.9.3)
@@ -351,6 +372,9 @@ importers:
       pg:
         specifier: ^8.13.0
         version: 8.20.0
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
     devDependencies:
       '@types/node':
         specifier: ^20.14.0
@@ -358,9 +382,6 @@ importers:
       '@types/pg':
         specifier: ^8.11.10
         version: 8.20.0
-      tsx:
-        specifier: ^4.19.0
-        version: 4.21.0
       typescript:
         specifier: ^5.6.2
         version: 5.9.3
@@ -3974,6 +3995,9 @@ packages:
     resolution: {integrity: sha512-AcM7dV/5ul4EekoQ29Agm5vri8JNqRyj39o0qpX6vDF2GZrtutZl5RwgD1XnZjiTAfncsJhMI48QQH3sN87YNA==}
     engines: {node: '>=10'}
     hasBin: true
+
+  server-only@0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
 
   serwist@9.5.11:
     resolution: {integrity: sha512-Bq6uwJFd4ET60BWI77v3VbazKHv6k7lECOiiCFwKyBu/slaCn0GHJ5L5RfsuJUKrnbD9lYUCDo6sqaKRM5M2vA==}
@@ -7839,6 +7863,8 @@ snapshots:
   semver@7.7.4: {}
 
   semver@7.8.0: {}
+
+  server-only@0.0.1: {}
 
   serwist@9.5.11(browserslist@4.28.2)(typescript@5.9.3):
     dependencies:

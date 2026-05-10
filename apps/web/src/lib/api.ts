@@ -79,8 +79,10 @@ export function clearAuthToken(): void {
   document.cookie = `${DEV_LOGIN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
 }
 
-const API_BASE: string =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+// In the unified deploy (Next.js Route Handlers + web in one app), API
+// routes live at /api/v1/* on the same origin. NEXT_PUBLIC_API_URL is only
+// honored as an override for split-host setups.
+const API_BASE: string = process.env.NEXT_PUBLIC_API_URL ?? '';
 
 export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
   /** Auto-JSON-encoded request body. */
