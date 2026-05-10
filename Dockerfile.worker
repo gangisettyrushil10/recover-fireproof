@@ -1,0 +1,43 @@
+# syntax=docker/dockerfile:1.7
+# Multi-stage build for @fireproof/worker on Node 20 alpine + pnpm 9.
+
+ARG NODE_VERSION=20-alpine
+ARG PNPM_VERSION=9.12.0
+
+# ---------- Stage 1: deps ----------
+FROM node:${NODE_VERSION} AS deps
+ARG PNPM_VERSION
+RUN apk add --no-cache libc6-compat \
+    && corepack enable \
+    && corepack prepare pnpm@${PNPM_VERSION} --activate
+WORKDIR /repo
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc* ./
+RUN pnpm fetch
+
+# ---------- Stage 2: build ----------
+FROM node:${NODE_VERSION} AS build
+ARG PNPM_VERSION
+RUN apk add --no-cache libc6-compat \
+    && corepack enable \
+    && corepack prepare pnpm@${PNPM_VERSION} --activate
+WORKDIR /repo
+
+COPY --from=deps /repo /repo
+COPY . .
+
+RUN pnpm install --frozen-lockfile --offline
+RUN pnpm --filter @fireproof/worker... build
+
+RUN pnpm --filter @fireproof/worker deploy --prod --legacy /out/worker
+
+# ---------- Stage 3: runtime ----------
+FROM node:${NODE_VERSION} AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=build --chown=app:app /out/worker /app
+
+USER app
+CMD ["node", "apps/worker/dist/index.js"]

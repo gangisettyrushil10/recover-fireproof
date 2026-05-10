@@ -1,0 +1,50 @@
+/*
+ * @fireproof/ui — base CSS variables for light + dark themes.
+ * Imported by apps that consume this package alongside Tailwind v4.
+ */
+
+@layer base {
+  :root {
+    --color-bg: 255 255 255;
+    --color-bg-subtle: 248 250 252;
+    --color-bg-muted: 241 245 249;
+    --color-fg: 15 23 42;
+    --color-fg-muted: 71 85 105;
+    --color-fg-subtle: 148 163 184;
+    --color-border: 226 232 240;
+    --color-border-strong: 203 213 225;
+    --color-accent: 59 130 246;
+    --color-accent-fg: 255 255 255;
+    --color-success: 22 163 74;
+    --color-warning: 217 119 6;
+    --color-danger: 220 38 38;
+    --color-info: 14 165 233;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+  }
+
+  [data-theme='dark'] {
+    --color-bg: 11 15 25;
+    --color-bg-subtle: 17 24 39;
+    --color-bg-muted: 30 41 59;
+    --color-fg: 226 232 240;
+    --color-fg-muted: 148 163 184;
+    --color-fg-subtle: 100 116 139;
+    --color-border: 30 41 59;
+    --color-border-strong: 51 65 85;
+    --color-accent: 96 165 250;
+    --color-accent-fg: 11 15 25;
+    --color-success: 34 197 94;
+    --color-warning: 245 158 11;
+    --color-danger: 248 113 113;
+    --color-info: 56 189 248;
+  }
+
+  html,
+  body {
+    background-color: rgb(var(--color-bg));
+    color: rgb(var(--color-fg));
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+}

@@ -1,0 +1,41 @@
+# Vercel only needs apps/web and the workspace packages it depends on.
+# Exclude everything that's API/worker/infra/storage/seed-asset weight.
+
+# API and worker apps — not deployed via Vercel
+apps/api
+apps/worker
+
+# Infrastructure (docker-compose, Dockerfiles, GitHub Actions, MinIO config)
+infrastructure
+docker-compose.yml
+Dockerfile.api
+Dockerfile.web
+Dockerfile.worker
+.github
+
+# Local content-addressed storage (dev WORM adapter)
+.storage
+
+# Seed assets (large binaries — not needed for the web build)
+packages/seed/assets
+
+# Test, coverage, and build caches
+**/.turbo
+**/coverage
+**/dist
+**/.next
+**/node_modules
+
+# Editor / OS noise
+.DS_Store
+.idea
+.vscode
+*.log
+
+# Env files (Vercel uses its own env settings)
+.env
+.env.*
+!.env.example
+
+# Docs are fine to ship, but submission/demo assets aren't needed at build
+docs/screenshots

@@ -1,0 +1,100 @@
+{
+  "_comment": "Reference values for the production fireproof-originals bucket. Not deployed by this repo. Apply via Terraform/Pulumi (see infrastructure/iac/).",
+  "BucketConfiguration": {
+    "Bucket": "fireproof-originals",
+    "Region": "us-east-1",
+    "VersioningConfiguration": {
+      "Status": "Enabled",
+      "MFADelete": "Enabled"
+    },
+    "ObjectLockConfiguration": {
+      "ObjectLockEnabled": "Enabled",
+      "Rule": {
+        "DefaultRetention": {
+          "Mode": "COMPLIANCE",
+          "Days": 365
+        }
+      }
+    },
+    "ServerSideEncryptionConfiguration": {
+      "Rules": [
+        {
+          "ApplyServerSideEncryptionByDefault": {
+            "SSEAlgorithm": "aws:kms",
+            "KMSMasterKeyID": "arn:aws:kms:us-east-1:000000000000:key/REPLACE-ME"
+          },
+          "BucketKeyEnabled": true
+        }
+      ]
+    },
+    "PublicAccessBlockConfiguration": {
+      "BlockPublicAcls": true,
+      "IgnorePublicAcls": true,
+      "BlockPublicPolicy": true,
+      "RestrictPublicBuckets": true
+    },
+    "ReplicationConfiguration": {
+      "Role": "arn:aws:iam::000000000000:role/fireproof-originals-replication",
+      "Rules": [
+        {
+          "ID": "cross-region-dr",
+          "Status": "Enabled",
+          "Priority": 1,
+          "DeleteMarkerReplication": { "Status": "Disabled" },
+          "Filter": {},
+          "Destination": {
+            "Bucket": "arn:aws:s3:::fireproof-originals-dr",
+            "StorageClass": "STANDARD_IA"
+          }
+        }
+      ]
+    }
+  },
+  "BucketPolicy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "DenyInsecureTransport",
+        "Effect": "Deny",
+        "Principal": "*",
+        "Action": "s3:*",
+        "Resource": [
+          "arn:aws:s3:::fireproof-originals",
+          "arn:aws:s3:::fireproof-originals/*"
+        ],
+        "Condition": {
+          "Bool": { "aws:SecureTransport": "false" }
+        }
+      },
+      {
+        "Sid": "DenyUnencryptedPuts",
+        "Effect": "Deny",
+        "Principal": "*",
+        "Action": "s3:PutObject",
+        "Resource": "arn:aws:s3:::fireproof-originals/*",
+        "Condition": {
+          "StringNotEquals": {
+            "s3:x-amz-server-side-encryption": "aws:kms"
+          }
+        }
+      },
+      {
+        "Sid": "DenyBypassGovernanceRetention",
+        "Effect": "Deny",
+        "Principal": "*",
+        "Action": [
+          "s3:BypassGovernanceRetention",
+          "s3:PutObjectRetention",
+          "s3:PutObjectLegalHold",
+          "s3:DeleteObjectVersion"
+        ],
+        "Resource": "arn:aws:s3:::fireproof-originals/*",
+        "Condition": {
+          "StringNotEquals": {
+            "aws:PrincipalTag/role": "fireproof-legal-admin"
+          }
+        }
+      }
+    ]
+  }
+}

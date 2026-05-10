@@ -1,0 +1,63 @@
+{
+  "name": "@fireproof/legal-export",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pure-logic library for Fireproof contradiction detection and packet bundle generation.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./claims": {
+      "types": "./dist/claims/extractor.d.ts",
+      "import": "./dist/claims/extractor.js"
+    },
+    "./contradictions": {
+      "types": "./dist/contradictions/engine.d.ts",
+      "import": "./dist/contradictions/engine.js"
+    },
+    "./packets": {
+      "types": "./dist/packets/index.d.ts",
+      "import": "./dist/packets/index.js"
+    },
+    "./holds": {
+      "types": "./dist/holds/policy.d.ts",
+      "import": "./dist/holds/policy.js"
+    },
+    "./audit": {
+      "types": "./dist/audit/chain.d.ts",
+      "import": "./dist/audit/chain.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fireproof/domain": "workspace:*",
+    "archiver": "^7.0.1",
+    "date-fns": "^3.6.0",
+    "pdf-lib": "^1.17.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  }
+}

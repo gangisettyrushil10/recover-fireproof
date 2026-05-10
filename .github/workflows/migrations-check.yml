@@ -1,0 +1,109 @@
+name: migrations-check
+
+on:
+  pull_request:
+    paths:
+      - "packages/db/migrations/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  detect-and-comment:
+    name: detect new migrations and post checklist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: detect added migration files
+        id: detect
+        run: |
+          set -eu
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+          ADDED=$(git diff --name-only --diff-filter=A "$BASE_SHA" "$HEAD_SHA" -- 'packages/db/migrations/**' || true)
+          MODIFIED=$(git diff --name-only --diff-filter=M "$BASE_SHA" "$HEAD_SHA" -- 'packages/db/migrations/**' || true)
+
+          {
+            echo "added<<EOF"
+            echo "$ADDED"
+            echo "EOF"
+            echo "modified<<EOF"
+            echo "$MODIFIED"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          if [ -n "$ADDED" ] || [ -n "$MODIFIED" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: scan for destructive operations
+        if: steps.detect.outputs.has_changes == 'true'
+        id: scan
+        run: |
+          set -eu
+          PATTERNS='DROP TABLE|DROP COLUMN|DROP CONSTRAINT|DROP INDEX|TRUNCATE|ALTER COLUMN .* DROP|ALTER COLUMN .* TYPE'
+          FOUND=""
+          for f in $(echo "${{ steps.detect.outputs.added }}" "${{ steps.detect.outputs.modified }}" | tr ' ' '\n' | sort -u); do
+            [ -z "$f" ] && continue
+            [ -f "$f" ] || continue
+            if grep -EHn -i "$PATTERNS" "$f"; then
+              FOUND="${FOUND}${f}\n"
+            fi
+          done
+          if [ -n "$FOUND" ]; then
+            echo "destructive_found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "destructive_found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: post migration checklist
+        if: steps.detect.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const added = `${{ steps.detect.outputs.added }}`.trim();
+            const modified = `${{ steps.detect.outputs.modified }}`.trim();
+            const destructive = `${{ steps.scan.outputs.destructive_found }}` === 'true';
+
+            const fmt = (s) => s ? s.split('\n').map(l => `- \`${l}\``).join('\n') : '_none_';
+
+            const body = [
+              '## Migration review checklist',
+              '',
+              'This PR modifies `packages/db/migrations/`. Please confirm before merging:',
+              '',
+              '- [ ] Migration is forward-only (no rollback expected to recover data; supersession instead).',
+              '- [ ] Backfill plan documented in PR description if existing rows need new defaults.',
+              '- [ ] Rollback / safe-revert plan documented (or "no rollback required" with reason).',
+              '- [ ] No destructive operation (`DROP`, `TRUNCATE`, `ALTER COLUMN ... DROP`, etc.) without an explicit `-- ALLOW_DESTRUCTIVE` comment in the migration AND sign-off from a code owner.',
+              '- [ ] Idempotent where reasonable (`IF NOT EXISTS` / `CREATE OR REPLACE`).',
+              '- [ ] Tested locally against a seeded database.',
+              '- [ ] Indexes added with `CONCURRENTLY` for tables expected to be large in production.',
+              '- [ ] Any change to `documents`, `document_versions`, `legal_holds`, or `audit_events` reviewed by a second engineer (record-integrity surface).',
+              '',
+              '### Files',
+              '',
+              '**Added:**',
+              fmt(added),
+              '',
+              '**Modified:**',
+              fmt(modified),
+              '',
+              destructive
+                ? '> **Destructive SQL detected.** A reviewer must confirm `-- ALLOW_DESTRUCTIVE` is present and a backfill/rollback plan is in the PR description.'
+                : '_No destructive SQL detected by the regex scan. Review remains required._'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

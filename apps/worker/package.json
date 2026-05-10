@@ -1,0 +1,33 @@
+{
+  "name": "@fireproof/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "BullMQ workers for Fireproof: packet generation, contradiction detection, notifications, evidence validation.",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fireproof/db": "workspace:*",
+    "@fireproof/domain": "workspace:*",
+    "@fireproof/legal-export": "workspace:*",
+    "@fireproof/rules": "workspace:*",
+    "bullmq": "^5.13.0",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.4.1",
+    "pino": "^9.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsup": "^8.3.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  }
+}

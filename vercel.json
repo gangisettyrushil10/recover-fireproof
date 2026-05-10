@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install --frozen-lockfile=false",
+  "buildCommand": "pnpm install --frozen-lockfile=false && pnpm --filter @fireproof/web build",
+  "outputDirectory": "apps/web/.next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- apps/web packages/domain packages/ui packages/rules packages/legal-export pnpm-lock.yaml package.json vercel.json; if [ $? -eq 1 ]; then exit 1; else exit 0; fi",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://example.invalid"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_API_URL": "https://example.invalid"
+    }
+  }
+}

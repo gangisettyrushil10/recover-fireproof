@@ -1,0 +1,53 @@
+# Placeholder Prometheus scrape config for Fireproof.
+#
+# NOTE: As of MVP the api / worker / web services do NOT expose a /metrics
+# endpoint. The instrumentation tickets are tracked separately. When those
+# land, switch the scrape targets below from "down" to "up" and verify in
+# the Prometheus UI.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: fireproof-dev
+    environment: local
+
+scrape_configs:
+  - job_name: fireproof-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:9100"]
+        labels:
+          service: api
+    # TODO(observability): apps/api does not yet expose /metrics. Enable
+    # prom-client + register an HTTP handler before relying on this.
+
+  - job_name: fireproof-worker
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["worker:9101"]
+        labels:
+          service: worker
+    # TODO(observability): apps/worker does not yet expose /metrics.
+
+  - job_name: fireproof-web
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["web:3000"]
+        labels:
+          service: web
+    # TODO(observability): apps/web does not yet expose /api/metrics.
+
+  - job_name: postgres
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+        labels:
+          service: postgres
+    # TODO(observability): postgres-exporter sidecar not deployed yet.
+
+  - job_name: redis
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+        labels:
+          service: redis
+    # TODO(observability): redis-exporter sidecar not deployed yet.

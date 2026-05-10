@@ -1,0 +1,82 @@
+# Render blueprint for the Beacon Fire & Safety case-study prototype.
+#
+# One-click deploy: push to GitHub, then in Render, click
+#   New + → Blueprint → connect repo → Deploy.
+# Render reads this file and provisions:
+#   - a managed Postgres database
+#   - the API web service (Fastify on Node, on its own URL)
+#   - the web/PWA web service (Next.js, on its own URL)
+#
+# Free-tier services hibernate after 15 min of inactivity. The first request
+# after hibernation incurs ~30s cold start. Switch to the $7/mo "Starter"
+# plan if you want always-on.
+
+databases:
+  - name: fireproof-db
+    plan: free
+    databaseName: fireproof
+    user: fireproof
+    postgresMajorVersion: "16"
+
+services:
+  # ── API (Fastify) ─────────────────────────────────────────────────────
+  - type: web
+    name: fireproof-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: .
+    buildCommand: |
+      corepack enable
+      pnpm install --frozen-lockfile=false
+      # Build only the workspace packages whose consumers expect a `dist/`.
+      pnpm --filter @fireproof/domain build
+      pnpm --filter @fireproof/rules build
+      pnpm --filter @fireproof/legal-export build
+    # Start command: apply migrations, idempotent seed, then boot the API.
+    # The seed uses ON CONFLICT DO NOTHING so re-running is safe.
+    startCommand: |
+      pnpm --filter @fireproof/api db:migrate
+      pnpm --filter @fireproof/seed seed
+      pnpm --filter @fireproof/api start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fireproof-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: STORAGE_DRIVER
+        value: local
+      - key: LOCAL_STORAGE_ROOT
+        value: /opt/render/project/.storage
+
+  # ── Web (Next.js PWA) ──────────────────────────────────────────────────
+  - type: web
+    name: fireproof-web
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: .
+    buildCommand: |
+      corepack enable
+      pnpm install --frozen-lockfile=false
+      pnpm --filter @fireproof/domain build
+      pnpm --filter @fireproof/web build
+    startCommand: pnpm --filter @fireproof/web start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      # The API is exposed at https://<api-service-name>.onrender.com.
+      # If you renamed the api service above, update this value to match.
+      # NEXT_PUBLIC_API_URL is read at *build* time by Next.js — re-deploy
+      # the web service after changing it.
+      - key: NEXT_PUBLIC_API_URL
+        value: https://fireproof-api.onrender.com

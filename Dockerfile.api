@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1.7
+# Multi-stage build for @fireproof/api on Node 20 alpine + pnpm 9.
+
+ARG NODE_VERSION=20-alpine
+ARG PNPM_VERSION=9.12.0
+
+# ---------- Stage 1: deps (fetch into pnpm store) ----------
+FROM node:${NODE_VERSION} AS deps
+ARG PNPM_VERSION
+RUN apk add --no-cache libc6-compat \
+    && corepack enable \
+    && corepack prepare pnpm@${PNPM_VERSION} --activate
+WORKDIR /repo
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc* ./
+RUN pnpm fetch
+
+# ---------- Stage 2: build ----------
+FROM node:${NODE_VERSION} AS build
+ARG PNPM_VERSION
+RUN apk add --no-cache libc6-compat \
+    && corepack enable \
+    && corepack prepare pnpm@${PNPM_VERSION} --activate
+WORKDIR /repo
+
+COPY --from=deps /repo /repo
+COPY . .
+
+RUN pnpm install --frozen-lockfile --offline
+RUN pnpm --filter @fireproof/api... build
+
+# Trim install to production deps only for the api workspace.
+RUN pnpm --filter @fireproof/api deploy --prod --legacy /out/api
+
+# ---------- Stage 3: runtime ----------
+FROM node:${NODE_VERSION} AS runtime
+ENV NODE_ENV=production \
+    PORT=4000
+WORKDIR /app
+
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=build --chown=app:app /out/api /app
+
+USER app
+EXPOSE 4000
+CMD ["node", "apps/api/dist/server.js"]
