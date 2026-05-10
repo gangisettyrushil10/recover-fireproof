@@ -1,11 +1,11 @@
-# Vercel only needs apps/web and the workspace packages it depends on.
-# Exclude everything that's API/worker/infra/storage/seed-asset weight.
+# Vercel deploys the Next.js app at apps/web. The colocated route handlers
+# under apps/web/app/api/v1/** import services from @fireproof/api via the
+# workspace, so apps/api MUST be included.
 
-# API and worker apps — not deployed via Vercel
-apps/api
+# Worker app — not deployed via Vercel
 apps/worker
 
-# Infrastructure (docker-compose, Dockerfiles, GitHub Actions, MinIO config)
+# Infrastructure that lives outside the Vercel build
 infrastructure
 docker-compose.yml
 Dockerfile.api
@@ -16,10 +16,7 @@ Dockerfile.worker
 # Local content-addressed storage (dev WORM adapter)
 .storage
 
-# Seed assets (large binaries — not needed for the web build)
-packages/seed/assets
-
-# Test, coverage, and build caches
+# Test/coverage/build caches
 **/.turbo
 **/coverage
 **/dist
@@ -36,6 +33,3 @@ packages/seed/assets
 .env
 .env.*
 !.env.example
-
-# Docs are fine to ship, but submission/demo assets aren't needed at build
-docs/screenshots
