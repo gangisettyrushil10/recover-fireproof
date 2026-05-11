@@ -61,6 +61,18 @@ const nextConfig: NextConfig = {
       '.mjs': ['.mts', '.mjs'],
       '.cjs': ['.cts', '.cjs'],
     };
+    // Cross-workspace resolution: webpack only walks node_modules from the
+    // Next.js project root (apps/web). Tell it to also look at the
+    // monorepo root's node_modules so imports from inside @fireproof/api
+    // (e.g. `import '@fireproof/legal-export'`) resolve via pnpm's
+    // hoisted workspace symlinks.
+    const path = require('node:path');
+    const monorepoNm = path.resolve(__dirname, '../../node_modules');
+    config.resolve.modules = [
+      'node_modules',
+      monorepoNm,
+      ...((config.resolve.modules as string[] | undefined) ?? []),
+    ];
     return config;
   },
 };
