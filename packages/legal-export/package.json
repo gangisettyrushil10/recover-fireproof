@@ -4,40 +4,19 @@
   "private": true,
   "description": "Pure-logic library for Fireproof contradiction detection and packet bundle generation.",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./claims": {
-      "types": "./dist/claims/extractor.d.ts",
-      "import": "./dist/claims/extractor.js"
-    },
-    "./contradictions": {
-      "types": "./dist/contradictions/engine.d.ts",
-      "import": "./dist/contradictions/engine.js"
-    },
-    "./packets": {
-      "types": "./dist/packets/index.d.ts",
-      "import": "./dist/packets/index.js"
-    },
-    "./holds": {
-      "types": "./dist/holds/policy.d.ts",
-      "import": "./dist/holds/policy.js"
-    },
-    "./audit": {
-      "types": "./dist/audit/chain.d.ts",
-      "import": "./dist/audit/chain.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.js"
-    }
+    ".": "./src/index.ts",
+    "./claims": "./src/claims/extractor.ts",
+    "./contradictions": "./src/contradictions/engine.ts",
+    "./packets": "./src/packets/index.ts",
+    "./holds": "./src/holds/policy.ts",
+    "./audit": "./src/audit/chain.ts",
+    "./types": "./src/types.ts"
   },
-  "files": ["dist"],
+  "files": ["src"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

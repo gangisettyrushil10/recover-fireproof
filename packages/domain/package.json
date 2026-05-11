@@ -4,44 +4,20 @@
   "private": true,
   "description": "Shared domain types, Zod schemas, enums, state machines, and error codes for Fireproof.",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.js"
-    },
-    "./schemas": {
-      "types": "./dist/schemas/index.d.ts",
-      "import": "./dist/schemas/index.js"
-    },
-    "./enums": {
-      "types": "./dist/enums.d.ts",
-      "import": "./dist/enums.js"
-    },
-    "./errors": {
-      "types": "./dist/errors.d.ts",
-      "import": "./dist/errors.js"
-    },
-    "./states": {
-      "types": "./dist/states.d.ts",
-      "import": "./dist/states.js"
-    },
-    "./transitions": {
-      "types": "./dist/transitions.d.ts",
-      "import": "./dist/transitions.js"
-    },
-    "./api": {
-      "types": "./dist/api/index.d.ts",
-      "import": "./dist/api/index.js"
-    }
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./schemas": "./src/schemas/index.ts",
+    "./enums": "./src/enums.ts",
+    "./errors": "./src/errors.ts",
+    "./states": "./src/states.ts",
+    "./transitions": "./src/transitions.ts",
+    "./api": "./src/api/index.ts"
   },
-  "files": ["dist"],
+  "files": ["src"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

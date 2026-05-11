@@ -4,28 +4,16 @@
   "private": true,
   "description": "Rule pack engine and seeded jurisdiction packs for Fireproof.",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./evaluator": {
-      "types": "./dist/evaluator.d.ts",
-      "import": "./dist/evaluator.js"
-    },
-    "./packs": {
-      "types": "./dist/packs/index.d.ts",
-      "import": "./dist/packs/index.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.js"
-    }
+    ".": "./src/index.ts",
+    "./evaluator": "./src/evaluator.ts",
+    "./packs": "./src/packs/index.ts",
+    "./types": "./src/types.ts"
   },
-  "files": ["dist"],
+  "files": ["src"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
