@@ -11,13 +11,22 @@ const withSerwist = withSerwistInit({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: [
-    '@fireproof/ui',
-    '@fireproof/domain',
-    '@fireproof/db',
-    '@fireproof/rules',
-    '@fireproof/legal-export',
+  // UI components are client-side; bundle them.
+  transpilePackages: ['@fireproof/ui'],
+  // The route-handler stack runs on the server. Treating these as external
+  // means Node's runtime resolver finds them via pnpm's workspace
+  // symlinks — webpack stops trying to recursively bundle their imports.
+  serverExternalPackages: [
     '@fireproof/api',
+    '@fireproof/db',
+    '@fireproof/domain',
+    '@fireproof/legal-export',
+    '@fireproof/rules',
+    'drizzle-orm',
+    'pg',
+    'pdf-lib',
+    'archiver',
+    'jose',
   ],
   // Route handlers in /app/api/v1/** wrap the same domain services used by
   // the standalone Fastify API. The apiClient targets /v1/* — rewrite to the
